@@ -111,8 +111,7 @@ const Board = () => {
 
     //  deciding whether other parts can be merged together or not
     if (
-      Math.floor(otherParts / 2) !== firstPart &&
-      Math.ceil(otherParts / 2) !== firstPart &&
+      Math.trunc(otherParts / 2) !== firstPart &&
       Math.trunc(otherParts / 2) !== firstPart + 1
     ) {
       alert("Can't be done - can't merge");
