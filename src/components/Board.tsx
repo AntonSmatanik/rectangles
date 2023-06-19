@@ -42,7 +42,7 @@ const Board = () => {
     const sizeOfAll = sizes.reduce((a, b) => a + b, 0);
     const squareSide = Math.sqrt(sizeOfAll);
 
-    //  this is used to scale the square, to be more visible on the screen
+    //  used to scale the square, to be more visible on the screen
     const multiplier = window.innerHeight / squareSide;
 
     let previousTop = 0;
@@ -86,38 +86,35 @@ const Board = () => {
   };
 
   //  merging rectangles
-  const merge = (e: React.MouseEvent, firstPartIndex: number): void => {
+  const merge = (e: React.MouseEvent, startIndex: number): void => {
     e.preventDefault();
 
     //  if we are on the last item, there is no reason to do anything
-    if (firstPartIndex === sizes.length - 1) {
+    if (startIndex === sizes.length - 1) {
       alert("Can't be done - last item");
       return;
     }
 
-    const firstPart = sizes[firstPartIndex];
-    let secondPart = 0;
-    let secondPartIndex = firstPartIndex + 1;
+    const firstPart = sizes[startIndex];
+    let otherParts = 0;
+    let endIndex = startIndex + 1;
 
-    while (secondPart < firstPart * 2 && secondPartIndex < sizes.length) {
-      secondPart += sizes[secondPartIndex++];
+    while (otherParts < firstPart * 2 && endIndex < sizes.length) {
+      otherParts += sizes[endIndex++];
     }
 
     //  deciding whether other parts can be merged together or not
     if (
-      Math.floor(secondPart / 2) !== firstPart &&
-      Math.ceil(secondPart / 2) !== firstPart
+      Math.floor(otherParts / 2) !== firstPart &&
+      Math.ceil(otherParts / 2) !== firstPart &&
+      Math.trunc(otherParts / 2) !== firstPart + 1
     ) {
       alert("Can't be done - can't merge");
       return;
     }
 
     const newSizes = [...sizes];
-    newSizes.splice(
-      firstPartIndex,
-      secondPartIndex - firstPartIndex,
-      firstPart + secondPart
-    );
+    newSizes.splice(startIndex, endIndex - startIndex, firstPart + otherParts);
 
     searchParams.set("sizes", JSON.stringify(newSizes));
     setSearchParams(searchParams);
@@ -129,15 +126,10 @@ const Board = () => {
 
   return (
     <div className="board">
-      {computedSizes.map(({ left, top, height, width, size, color }, index) => (
+      {computedSizes.map((params, index) => (
         <Rectangle
-          key={`${top}-${left}`}
-          left={left}
-          top={top}
-          height={height}
-          width={width}
-          size={size}
-          color={color}
+          key={`${params.top}-${params.left}`}
+          {...params}
           index={index}
           split={split}
           merge={merge}
