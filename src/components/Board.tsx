@@ -75,6 +75,12 @@ const Board = () => {
   //  division of a rectangle into two parts
   const split = (index: number): void => {
     const value = sizes[index];
+
+    if (value < 3) {
+      alert("Can't be done - item size is too small");
+      return;
+    }
+
     const firstPart = Math.floor(value / 3);
     const secondPart = value - firstPart;
 
