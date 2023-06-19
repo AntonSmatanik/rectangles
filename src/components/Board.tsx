@@ -4,7 +4,7 @@ import { TRectangleData } from "../types";
 import Rectangle from "./Rectangle";
 import Error from "./Error";
 import colors from "../data/colors.json";
-import { isEven } from "../functions";
+import { isEven, onlyNumbers } from "../functions";
 
 const Board = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +26,11 @@ const Board = () => {
 
   if (sizes.length === 0 && !errorMessage) {
     errorMessage = "Query parameter 'sizes' in the URL is empty";
+  }
+
+  if (!onlyNumbers(sizes)) {
+    errorMessage =
+      "Query parameter 'sizes' in the URL must be an array of numbers";
   }
 
   //  calculating the position, size and colour of rectangles
