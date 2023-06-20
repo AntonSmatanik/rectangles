@@ -4,7 +4,7 @@ import { TRectangleData } from "../types";
 import Rectangle from "./Rectangle";
 import Error from "./Error";
 import colors from "../data/colors.json";
-import { isEven, onlyNumbers } from "../functions";
+import { isEven, isArrayOfNumbers } from "../functions";
 
 const Board = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,21 +20,22 @@ const Board = () => {
       const parsedSizes = JSON.parse(stringSizes);
 
       if (Array.isArray(parsedSizes)) {
-        sizes = parsedSizes;
+        if (parsedSizes.length === 0) {
+          errorMessage = "Query parameter 'sizes' is an empty array";
+        } else {
+          if (!isArrayOfNumbers(parsedSizes)) {
+            errorMessage =
+              "Query parameter 'sizes' must be an array of numbers";
+          } else {
+            sizes = parsedSizes;
+          }
+        }
       } else {
         errorMessage = "Query parameter 'sizes' must be an array";
       }
     } catch (e) {
       errorMessage = "Query parameter 'sizes' is malformed";
     }
-  }
-
-  if (sizes.length === 0 && !errorMessage) {
-    errorMessage = "Query parameter 'sizes' is empty array";
-  }
-
-  if (!onlyNumbers(sizes)) {
-    errorMessage = "Query parameter 'sizes' must be an array of numbers";
   }
 
   //  calculating the position, size and colour of rectangles
