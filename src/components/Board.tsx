@@ -14,23 +14,27 @@ const Board = () => {
   let errorMessage: string = "";
 
   if (!stringSizes) {
-    errorMessage = "Query parameter 'sizes' in the URL is missing";
+    errorMessage = "Query parameter 'sizes' is missing";
   } else {
     try {
-      sizes = JSON.parse(stringSizes);
+      const parsedSizes = JSON.parse(stringSizes);
+
+      if (Array.isArray(parsedSizes)) {
+        sizes = parsedSizes;
+      } else {
+        errorMessage = "Query parameter 'sizes' must be an array";
+      }
     } catch (e) {
-      errorMessage =
-        "Query parameter 'sizes' in the URL must be an array of numbers";
+      errorMessage = "Query parameter 'sizes' is malformed";
     }
   }
 
   if (sizes.length === 0 && !errorMessage) {
-    errorMessage = "Query parameter 'sizes' in the URL is empty";
+    errorMessage = "Query parameter 'sizes' is empty array";
   }
 
   if (!onlyNumbers(sizes)) {
-    errorMessage =
-      "Query parameter 'sizes' in the URL must be an array of numbers";
+    errorMessage = "Query parameter 'sizes' must be an array of numbers";
   }
 
   //  calculating the position, size and colour of rectangles
