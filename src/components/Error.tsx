@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { TErrorData } from "../types";
+import { defaultQueryParamValues } from "../data";
 
 const Error = ({ message, code }: TErrorData) => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const Error = ({ message, code }: TErrorData) => {
   const goToRouteWithParams = () =>
     navigate({
       pathname: "/",
-      search: "?sizes=[100,46,21,60,24]",
+      search: defaultQueryParamValues,
     });
 
   return (

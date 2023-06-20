@@ -13,7 +13,6 @@ export type TRectangleData = {
 };
 
 export type TRectangleComponent = TRectangleData & {
-  index: number;
-  split: (size: number) => void;
-  merge: (e: React.MouseEvent, size: number) => void;
+  onClick: () => void;
+  onContextMenu: (e: React.MouseEvent) => void;
 };

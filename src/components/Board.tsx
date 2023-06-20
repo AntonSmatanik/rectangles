@@ -1,42 +1,19 @@
 import React, { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
 import { TRectangleData } from "../types";
 import Rectangle from "./Rectangle";
 import Error from "./Error";
 import colors from "../data/colors.json";
-import { isEven, isArrayOfNumbers } from "../functions";
+import { isEven } from "../functions";
+import useParseParam from "../hooks/useParseParam";
+import { useSearchParams } from "react-router-dom";
+import { queryParam } from "../data";
 
 const Board = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const stringSizes = searchParams.get("sizes");
-
-  let sizes: Array<number> = [];
-  let errorMessage: string = "";
-
-  if (!stringSizes) {
-    errorMessage = "Query parameter 'sizes' is missing";
-  } else {
-    try {
-      const parsedSizes = JSON.parse(stringSizes);
-
-      if (Array.isArray(parsedSizes)) {
-        if (parsedSizes.length === 0) {
-          errorMessage = "Query parameter 'sizes' is an empty array";
-        } else {
-          if (!isArrayOfNumbers(parsedSizes)) {
-            errorMessage =
-              "Query parameter 'sizes' must be an array of numbers";
-          } else {
-            sizes = parsedSizes;
-          }
-        }
-      } else {
-        errorMessage = "Query parameter 'sizes' must be an array";
-      }
-    } catch (e) {
-      errorMessage = "Query parameter 'sizes' is malformed";
-    }
-  }
+  const { value: sizes, errorMessage } = useParseParam(
+    searchParams,
+    queryParam
+  );
 
   //  calculating the position, size and colour of rectangles
   const computedSizes: Array<TRectangleData> = useMemo(() => {
@@ -92,7 +69,7 @@ const Board = () => {
     const newSizes = [...sizes];
     newSizes.splice(index, 1, firstPart, secondPart);
 
-    searchParams.set("sizes", JSON.stringify(newSizes));
+    searchParams.set(queryParam, JSON.stringify(newSizes));
     setSearchParams(searchParams);
   };
 
@@ -126,7 +103,7 @@ const Board = () => {
     const newSizes = [...sizes];
     newSizes.splice(startIndex, endIndex - startIndex, firstPart + otherParts);
 
-    searchParams.set("sizes", JSON.stringify(newSizes));
+    searchParams.set(queryParam, JSON.stringify(newSizes));
     setSearchParams(searchParams);
   };
 
@@ -140,9 +117,8 @@ const Board = () => {
         <Rectangle
           key={`${params.top}-${params.left}`}
           {...params}
-          index={index}
-          split={split}
-          merge={merge}
+          onClick={() => split(index)}
+          onContextMenu={(e) => merge(e, index)}
         />
       ))}
     </div>

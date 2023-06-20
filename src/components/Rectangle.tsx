@@ -9,9 +9,7 @@ const Rectangle = React.memo(
     width,
     size,
     color,
-    index,
-    split,
-    merge,
+    ...rootDOMAttributes
   }: TRectangleComponent) => (
     <div
       style={{
@@ -23,9 +21,8 @@ const Rectangle = React.memo(
         border: `outset ${color} 0.15rem`,
       }}
       className="rectangle"
-      onClick={() => split(index)}
-      onContextMenu={(e) => merge(e, index)}
       title={size.toString()}
+      {...rootDOMAttributes}
     >
       {size}
     </div>
