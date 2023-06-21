@@ -1,27 +1,25 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { TRectangleData } from "../types";
 import Rectangle from "./Rectangle";
 import Error from "./Error";
-import colors from "../data/colors.json";
-import { isEven } from "../functions";
+
+import { isEven, pickColor } from "../functions";
 import useParseParam from "../hooks/useParseParam";
 import { useSearchParams } from "react-router-dom";
 import { queryParam } from "../data";
 
 const Board = () => {
+  const sizesRef: React.MutableRefObject<number[]> = useRef([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { value: sizes, errorMessage } = useParseParam(
-    searchParams,
-    queryParam
-  );
+  const { errorMessage } = useParseParam(searchParams, queryParam, sizesRef);
 
   //  calculating the position, size and colour of rectangles
   const rectangles: Array<TRectangleData> = useMemo(() => {
-    if (sizes.length === 0) {
+    if (sizesRef.current.length === 0) {
       return [];
     }
 
-    const sizeOfAll = sizes.reduce((a, b) => a + b, 0);
+    const sizeOfAll = sizesRef.current.reduce((a, b) => a + b, 0);
     const squareSide = Math.sqrt(sizeOfAll);
 
     //  used to scale the square, to be more visible on the screen
@@ -30,7 +28,7 @@ const Board = () => {
     let previousTop = 0;
     let previousLeft = 0;
 
-    return sizes.map((size, i) => {
+    return sizesRef.current.map((size, i) => {
       const top = previousTop;
       const left = previousLeft;
 
@@ -49,14 +47,14 @@ const Board = () => {
         height: Math.round(height * multiplier),
         width: Math.round(width * multiplier),
         size,
-        color: colors[i],
+        color: pickColor(i),
       };
     });
-  }, [sizes]);
+  }, [sizesRef.current]);
 
   //  division of a rectangle into two parts
-  const split = (index: number): void => {
-    const value = sizes[index];
+  const split = useCallback((index: number): void => {
+    const value = sizesRef.current[index];
 
     if (value < 3) {
       alert("Can't be done - item size is too small");
@@ -66,29 +64,29 @@ const Board = () => {
     const firstPart = Math.floor(value / 3);
     const secondPart = value - firstPart;
 
-    const newSizes = [...sizes];
+    const newSizes = [...sizesRef.current];
     newSizes.splice(index, 1, firstPart, secondPart);
 
     searchParams.set(queryParam, JSON.stringify(newSizes));
     setSearchParams(searchParams);
-  };
+  }, []);
 
   //  merging rectangles
-  const merge = (e: React.MouseEvent, startIndex: number): void => {
+  const merge = useCallback((e: React.MouseEvent, startIndex: number): void => {
     e.preventDefault();
 
     //  if we are on the last item, there is no reason to do anything
-    if (startIndex === sizes.length - 1) {
+    if (startIndex === sizesRef.current.length - 1) {
       alert("Can't be done - last item");
       return;
     }
 
-    const firstPart = sizes[startIndex];
+    const firstPart = sizesRef.current[startIndex];
     let otherParts = 0;
     let endIndex = startIndex + 1;
 
-    while (otherParts < firstPart * 2 && endIndex < sizes.length) {
-      otherParts += sizes[endIndex++];
+    while (otherParts < firstPart * 2 && endIndex < sizesRef.current.length) {
+      otherParts += sizesRef.current[endIndex++];
     }
 
     //  deciding whether other parts can be merged together or not
@@ -100,12 +98,12 @@ const Board = () => {
       return;
     }
 
-    const newSizes = [...sizes];
+    const newSizes = [...sizesRef.current];
     newSizes.splice(startIndex, endIndex - startIndex, firstPart + otherParts);
 
     searchParams.set(queryParam, JSON.stringify(newSizes));
     setSearchParams(searchParams);
-  };
+  }, []);
 
   if (errorMessage) {
     return <Error message={errorMessage} />;
@@ -117,8 +115,9 @@ const Board = () => {
         <Rectangle
           key={`${params.top}-${params.left}`}
           {...params}
-          onClick={() => split(index)}
-          onContextMenu={(e) => merge(e, index)}
+          index={index}
+          split={split}
+          merge={merge}
         />
       ))}
     </div>

@@ -2,11 +2,11 @@ import { isArrayOfNumbers } from "../functions";
 
 const useParseParam = (
   searchParams: URLSearchParams,
-  queryParam: string
-): { value: Array<number>; errorMessage: string } => {
+  queryParam: string,
+  sizesRef: React.MutableRefObject<number[]>
+): { errorMessage: string } => {
   const paramValue = searchParams.get(queryParam);
 
-  let value: Array<number> = [];
   let errorMessage: string = "";
 
   if (!paramValue) {
@@ -22,7 +22,7 @@ const useParseParam = (
           if (!isArrayOfNumbers(parsedParam)) {
             errorMessage = `Query parameter '${queryParam}' must be an array of numbers`;
           } else {
-            value = parsedParam;
+            sizesRef.current = parsedParam;
           }
         }
       } else {
@@ -33,7 +33,7 @@ const useParseParam = (
     }
   }
 
-  return { value, errorMessage };
+  return { errorMessage };
 };
 
 export default useParseParam;
