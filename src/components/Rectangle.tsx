@@ -1,16 +1,17 @@
 import React from "react";
 import { TRectangleComponent } from "../types";
 
-const Rectangle = React.memo(
-  ({
-    left,
-    top,
-    height,
-    width,
-    size,
-    color,
-    ...rootDOMAttributes
-  }: TRectangleComponent) => (
+const Rectangle = ({
+  left,
+  top,
+  height,
+  width,
+  size,
+  color,
+  ...rootDOMAttributes
+}: TRectangleComponent) => {
+  console.log("size", size);
+  return (
     <div
       style={{
         left: `${left}px`,
@@ -26,17 +27,20 @@ const Rectangle = React.memo(
     >
       {size}
     </div>
-  ),
-  (prevProps, nextProps) => {
-    if (
-      prevProps.left === nextProps.left &&
-      prevProps.top === nextProps.top &&
-      prevProps.size === nextProps.size
-    ) {
-      return true;
-    }
-    return false;
-  }
-);
+  );
+};
 
-export default Rectangle;
+const memoizedRectangle = React.memo(Rectangle, (prevProps, nextProps) => {
+  if (
+    prevProps.top === nextProps.top &&
+    prevProps.left === nextProps.left &&
+    prevProps.size === nextProps.size &&
+    prevProps.onClick === nextProps.onClick &&
+    prevProps.onContextMenu === nextProps.onContextMenu
+  )
+    return true;
+
+  return false;
+});
+
+export default memoizedRectangle;
