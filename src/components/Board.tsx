@@ -16,7 +16,7 @@ const Board = () => {
   );
 
   //  calculating the position, size and colour of rectangles
-  const computedSizes: Array<TRectangleData> = useMemo(() => {
+  const rectangles: Array<TRectangleData> = useMemo(() => {
     if (sizes.length === 0) {
       return [];
     }
@@ -44,10 +44,10 @@ const Board = () => {
       }
 
       return {
-        top: top * multiplier,
-        left: left * multiplier,
-        height: height * multiplier,
-        width: width * multiplier,
+        top: Math.round(top * multiplier),
+        left: Math.round(left * multiplier),
+        height: Math.round(height * multiplier),
+        width: Math.round(width * multiplier),
         size,
         color: colors[i],
       };
@@ -113,7 +113,7 @@ const Board = () => {
 
   return (
     <div className="board">
-      {computedSizes.map((params, index) => (
+      {rectangles.map((params, index) => (
         <Rectangle
           key={`${params.top}-${params.left}`}
           {...params}

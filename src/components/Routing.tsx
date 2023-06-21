@@ -8,11 +8,8 @@ const Routing = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Board />}></Route>
-        <Route
-          path="*"
-          element={<Error code={404} message="Not found" />}
-        ></Route>
+        <Route index element={<Board />} />
+        <Route path="*" element={<Error code={404} message="Not found" />} />
       </Routes>
     </BrowserRouter>
   );
