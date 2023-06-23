@@ -1,4 +1,4 @@
-import colors from "../data/colors.json";
+import colors from "../data/colors.json" assert { type: "json" };
 
 export const pickColor = (index: number): string =>
   colors[index % colors.length];
