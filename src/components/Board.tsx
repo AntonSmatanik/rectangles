@@ -7,14 +7,16 @@ import { isEven, pickColor } from "../functions";
 import useParseParam from "../hooks/useParseParam";
 import { useSearchParams } from "react-router-dom";
 import { queryParam } from "../data";
+import useWindowSize from "../hooks/useWindowSize";
 
 const Board = () => {
   const sizesRef: React.MutableRefObject<number[]> = useRef([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const { errorMessage } = useParseParam(searchParams, queryParam, sizesRef);
+  const { windowHeight } = useWindowSize();
 
   //  calculating the position, size and colour of rectangles
-  const rectangles: Array<TRectangleData> = useMemo(() => {
+  const rectangles: TRectangleData[] = useMemo(() => {
     if (sizesRef.current.length === 0) {
       return [];
     }
@@ -23,7 +25,7 @@ const Board = () => {
     const squareSide = Math.sqrt(sizeOfAll);
 
     //  used to scale the square, to be more visible on the screen
-    const multiplier = window.innerHeight / squareSide;
+    const multiplier = windowHeight / squareSide;
 
     let previousTop = 0;
     let previousLeft = 0;
@@ -50,7 +52,7 @@ const Board = () => {
         color: pickColor(i),
       };
     });
-  }, [sizesRef.current]);
+  }, [sizesRef.current, windowHeight]);
 
   //  division of a rectangle into two parts
   const split = useCallback((index: number): void => {
@@ -115,9 +117,8 @@ const Board = () => {
         <Rectangle
           key={`${params.top}-${params.left}`}
           {...params}
-          index={index}
-          split={split}
-          merge={merge}
+          onClick={() => split(index)}
+          onContextMenu={(e) => merge(e, index)}
         />
       ))}
     </div>

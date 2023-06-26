@@ -8,9 +8,7 @@ const Rectangle = ({
   width,
   size,
   color,
-  index,
-  split,
-  merge,
+  ...rootDOMAttributes
 }: TRectangleComponent) => (
   <div
     style={{
@@ -23,8 +21,7 @@ const Rectangle = ({
     }}
     className="rectangle"
     title={size.toString()}
-    onClick={() => split(index)}
-    onContextMenu={(e) => merge(e, index)}
+    {...rootDOMAttributes}
   >
     {size}
   </div>
@@ -34,7 +31,8 @@ const memoizedRectangle = React.memo(Rectangle, (prevProps, nextProps) => {
   if (
     prevProps.top === nextProps.top &&
     prevProps.left === nextProps.left &&
-    prevProps.size === nextProps.size
+    prevProps.size === nextProps.size &&
+    prevProps.height === nextProps.height
   )
     return true;
 
