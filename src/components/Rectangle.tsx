@@ -2,20 +2,20 @@ import React from "react";
 import { TRectangleComponent } from "../types";
 
 const Rectangle = ({
-  left,
-  top,
-  height,
-  width,
+  gridRowStart,
+  gridRowEnd,
+  gridColumnStart,
+  gridColumnEnd,
   size,
   color,
   ...rootDOMAttributes
 }: TRectangleComponent) => (
   <div
     style={{
-      left: `${left}px`,
-      top: `${top}px`,
-      height: `${height}px`,
-      width: `${width}px`,
+      gridRowStart,
+      gridRowEnd,
+      gridColumnStart,
+      gridColumnEnd,
       backgroundColor: color,
       border: `outset ${color} 0.15rem`,
     }}
@@ -29,10 +29,9 @@ const Rectangle = ({
 
 const memoizedRectangle = React.memo(Rectangle, (prevProps, nextProps) => {
   if (
-    prevProps.top === nextProps.top &&
-    prevProps.left === nextProps.left &&
-    prevProps.size === nextProps.size &&
-    prevProps.height === nextProps.height
+    prevProps.gridRowStart === nextProps.gridRowStart &&
+    prevProps.gridColumnStart === nextProps.gridColumnStart &&
+    prevProps.size === nextProps.size
   )
     return true;
 

@@ -7,25 +7,21 @@ import { isEven, pickColor } from "../functions";
 import useParseParam from "../hooks/useParseParam";
 import { useSearchParams } from "react-router-dom";
 import { queryParam } from "../data";
-import useWindowSize from "../hooks/useWindowSize";
 
 const Board = () => {
   const sizesRef: React.MutableRefObject<number[]> = useRef([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const { errorMessage } = useParseParam(searchParams, queryParam, sizesRef);
-  const { windowHeight } = useWindowSize();
 
   //  calculating the position, size and colour of rectangles
-  const rectangles: TRectangleData[] = useMemo(() => {
+  const rectangleData: TRectangleData[] = useMemo(() => {
     if (sizesRef.current.length === 0) {
       return [];
     }
 
     const sizeOfAll = sizesRef.current.reduce((a, b) => a + b, 0);
     const squareSide = Math.sqrt(sizeOfAll);
-
-    //  used to scale the square, to be more visible on the screen
-    const multiplier = windowHeight / squareSide;
+    const density = 10;
 
     let previousTop = 0;
     let previousLeft = 0;
@@ -44,15 +40,15 @@ const Board = () => {
       }
 
       return {
-        top: Math.round(top * multiplier),
-        left: Math.round(left * multiplier),
-        height: Math.round(height * multiplier),
-        width: Math.round(width * multiplier),
+        gridRowStart: Math.round(top * density) + 1,
+        gridColumnStart: Math.round(left * density) + 1,
+        gridRowEnd: Math.round((top + height) * density) + 1,
+        gridColumnEnd: Math.round((left + width) * density) + 1,
         size,
         color: pickColor(i),
       };
     });
-  }, [sizesRef.current, windowHeight]);
+  }, [sizesRef.current]);
 
   //  division of a rectangle into two parts
   const split = useCallback((index: number): void => {
@@ -113,9 +109,9 @@ const Board = () => {
 
   return (
     <div className="board">
-      {rectangles.map((params, index) => (
+      {rectangleData.map((params, index) => (
         <Rectangle
-          key={`${params.top}-${params.left}`}
+          key={`${params.gridRowStart}-${params.gridColumnStart}-${params.size}`}
           {...params}
           onClick={() => split(index)}
           onContextMenu={(e) => merge(e, index)}

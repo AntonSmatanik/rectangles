@@ -1,4 +1,6 @@
 .board {
-  position: absolute;
-  left: 25%;
+  display: grid;
+  width: 100vh;
+  height: 100vh;
+  margin: 0 auto;
 }

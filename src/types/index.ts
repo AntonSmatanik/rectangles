@@ -4,10 +4,10 @@ export type TErrorData = {
 };
 
 export type TRectangleData = {
-  left: number;
-  top: number;
-  height: number;
-  width: number;
+  gridRowStart: number;
+  gridRowEnd: number;
+  gridColumnStart: number;
+  gridColumnEnd: number;
   size: number;
   color: string;
 };
